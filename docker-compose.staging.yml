@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  # Staging: set MODE and increase resource hints
+  discovery-worker:
+    environment:
+      - MODE=staging
+  crawl-worker:
+    environment:
+      - MODE=staging
+  dom-worker:
+    environment:
+      - MODE=staging
+  extract-worker:
+    environment:
+      - MODE=staging
+  dedup-worker:
+    environment:
+      - MODE=staging
+  sql-worker:
+    environment:
+      - MODE=staging

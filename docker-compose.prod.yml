@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  # Production notes: recommend using orchestration (Kubernetes/Swarm).
+  discovery-worker:
+    environment:
+      - MODE=production
+  crawl-worker:
+    environment:
+      - MODE=production
+  dom-worker:
+    environment:
+      - MODE=production
+  extract-worker:
+    environment:
+      - MODE=production
+  dedup-worker:
+    environment:
+      - MODE=production
+  sql-worker:
+    environment:
+      - MODE=production

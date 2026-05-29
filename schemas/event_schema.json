@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SEN Event",
+  "type": "object",
+  "required": ["provider_id","title_zh_cn","web_url"],
+  "properties": {
+    "provider_id": {"type":"integer"},
+    "title_zh_tw": {"type":"string"},
+    "title_zh_cn": {"type":"string"},
+    "title_en_us": {"type":"string"},
+    "description_zh_cn": {"type":"string"},
+    "description_zh_tw": {"type":"string"},
+    "description_en_us": {"type":"string"},
+    "summary_zh_cn": {"type":"string"},
+    "target_group": {"type":"string"},
+    "fee_type": {"type":"string"},
+    "fee": {"type":"string"},
+    "fee_amount": {"type":["number","null"]},
+    "currency": {"type":"string"},
+    "venue_name": {"type":"string"},
+    "web_url": {"type":"string","format":"uri"},
+    "signup_url": {"type":"string","format":"uri"},
+    "schedule_time": {"type":"string"},
+    "end_time": {"type":"string"},
+    "sen_codes_json": {"type":"array"},
+    "district_codes_json": {"type":"array"},
+    "age_ranges_json": {"type":"array"},
+    "language_codes_json": {"type":"array"},
+    "raw_html": {"type":"string"},
+    "screenshot_path": {"type":"string"}
+  }
+}

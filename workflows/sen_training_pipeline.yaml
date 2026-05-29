@@ -1,0 +1,17 @@
+workflow:
+  name: sen_training_pipeline
+  steps:
+    - discovery
+    - crawl
+    - dom_analysis
+    - extract
+    - sen_classify
+    - dedup
+    - sql
+  config:
+    retry_policy:
+      crawl: 3
+      extract: 2
+    timeouts:
+      crawl: 120
+      extract: 60

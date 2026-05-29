@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  # Development overrides: expose health/metrics ports to host for debugging
+  discovery-worker:
+    ports:
+      - '8001:8000'
+  crawl-worker:
+    ports:
+      - '8002:8000'
+  dom-worker:
+    ports:
+      - '8003:8000'
+  extract-worker:
+    ports:
+      - '8004:8000'
+  dedup-worker:
+    ports:
+      - '8005:8000'
+  sql-worker:
+    ports:
+      - '8006:8000'

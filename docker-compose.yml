@@ -1,0 +1,170 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    ports:
+      - '6379:6379'
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: sen
+      MYSQL_USER: sen
+      MYSQL_PASSWORD: senpass
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+    environment:
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+    volumes:
+      - ./logs/orchestrator:/app/logs
+    restart: unless-stopped
+
+  discovery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.discovery
+    environment:
+      - WORKER_CLASS=platform.agents.discovery.discovery_worker:DiscoveryWorker
+      - AGENT_NAME=discovery
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./logs/discovery:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  crawl-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.crawl
+    environment:
+      - WORKER_CLASS=platform.agents.crawl.crawl_worker:CrawlWorker
+      - AGENT_NAME=crawl
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+    volumes:
+      - ./logs/crawl:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  dom-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dom
+    environment:
+      - WORKER_CLASS=platform.agents.dom.dom_worker:DomWorker
+      - AGENT_NAME=dom
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+    volumes:
+      - ./logs/dom:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  extract-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.extract
+    environment:
+      - WORKER_CLASS=platform.agents.extract.extract_worker:ExtractWorker
+      - AGENT_NAME=extract
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+    volumes:
+      - ./logs/extract:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  dedup-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dedup
+    environment:
+      - WORKER_CLASS=platform.agents.dedup.dedup_worker:DedupWorker
+      - AGENT_NAME=dedup
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./logs/dedup:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  sql-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.sql
+    environment:
+      - WORKER_CLASS=platform.agents.sql.sql_worker:SQLWorker
+      - AGENT_NAME=sql
+      - NAMESPACE=sen
+      - REDIS_URL=redis://redis:6379/0
+      - MYSQL_URL=mysql://sen:senpass@mysql:3306/sen
+      - MODE=${MODE:-local}
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./logs/sql:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  mysql-data:
