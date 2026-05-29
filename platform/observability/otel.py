@@ -14,7 +14,7 @@ except Exception:
 tracer = None
 
 
-def init_tracer(service_name: str = 'sen_platform'):
+def init_tracer(service_name: str = 'platform'):
     global tracer
     provider = SDKTracerProvider()
     # choose exporter: OTLP if configured, otherwise console
