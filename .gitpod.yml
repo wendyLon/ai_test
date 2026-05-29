@@ -1,0 +1,22 @@
+image: gitpod/workspace-full
+
+tasks:
+  - init: |
+      sudo apt-get update
+      sudo apt-get install -y redis-server
+      sudo service redis-server start
+      python3 -m venv .venv
+      . .venv/bin/activate
+      pip install -U pip
+      pip install -r requirements.txt
+    command: |
+      . .venv/bin/activate
+      pytest tests/test_e2e_flow.py -q -s
+
+ports:
+  - port: 6379
+    onOpen: ignore
+
+vscode:
+  extensions:
+    - ms-python.python
